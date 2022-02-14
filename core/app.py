@@ -31,33 +31,36 @@ def vehicle(v,t,u,load):
     dv_dt = (1.0/(m+load)) * (Fp*u - 0.5*rho*Cd*A*v**2)
     return dv_dt
 
-delta_t = 1  # how long is each time step?
+delta_t = 0.1  # how long is each time step?
 
 # simulate step test operation
 # passenger(s) + cargo load
-load = 200.0 # kg
+load = 100.0 # kg
 # velocity initial condition
 v0 = 0.0
 # set point
 # for storing the results
 ubias = 0.0
-Kc = 1.0/0.72 * 5.0
-tauI = 25.0
+Kc = 1.04 * 2.5
+tauI = 45.0
 sum_int = 0.0
-
+sp_kmh = 0
 i = 0
 sp = 25.0
-
+last_update = 0
 
 starttime = time.time()
 while(True):
-    mycursor.execute("SELECT speed FROM speed ORDER BY Id DESC LIMIT 1;")
-    result = mycursor.fetchall()
-    if mycursor.rowcount > 0:
-        for x in result:
-            sp = x[0]
-    else:
-        sp = 0
+    if(last_update == 0 or time.time() - last_update > 1):
+        mycursor.execute("SELECT speed FROM speed ORDER BY Id DESC LIMIT 1;")
+        result = mycursor.fetchall()
+        if mycursor.rowcount > 0:
+            for x in result:
+                sp_kmh = x[0]
+                sp = sp_kmh/3.6
+        else:
+            sp = 0
+        last_update = 0
     
     error = sp - v0
     sum_int = sum_int + error * delta_t
@@ -73,11 +76,17 @@ while(True):
     
     v = odeint(vehicle,v0,[0,delta_t],args=(u,load))
     v0 = float(v[-1])
-    vals = (str(int(time.time() - starttime)), str(v0), str(sp))
-    sql = """INSERT INTO data (timestamp, cur_speed, set_speed) VALUES (%s, %s, %s);"""
-    mycursor.execute(sql, vals)
-    print(time.time(), v0, sp, u)
-    mydb.commit()
+    if v0 < 0:
+        v0 = 0.0
+        
+    if sp == 0 and v0 == 0:
+        u = 0
+    if(last_update == 0 or time.time() - last_update > 1):
+        vals = (str(int(time.time() - starttime)), str(v0*3.6), str(sp_kmh), str(u))
+        sql = """INSERT INTO data (timestamp, cur_speed, set_speed, throttle) VALUES (%s, %s, %s, %s);"""
+        mycursor.execute(sql, vals)
+        mydb.commit()
+        last_update = time.time()
     time.sleep(delta_t - ((time.time() - starttime) % delta_t))
 
 mycursor.close()    
