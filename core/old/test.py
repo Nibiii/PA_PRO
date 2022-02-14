@@ -12,10 +12,10 @@ def vehicle(v,t,u,load):
     #  t    = time (sec)
     #  u    = gas pedal position (-50% to 100%)
     #  load = passenger load + cargo (kg)
-    Cd = 0.31    # drag coefficient https://www.carinf.com/en/c380425176.html
+    Cd = 0.44    # drag coefficient https://www.carinf.com/en/c380425176.html
     rho = 1.225  # air density (kg/m^3)
-    A = 2.6    # cross-sectional area (m^2)
-    Fp = 20      # thrust parameter (N/%pedal)
+    A = 2.8    # cross-sectional area (m^2)
+    Fp = 22      # thrust parameter (N/%pedal)
     m = 940      # vehicle mass (kg)
     # calculate derivative of the velocity
     dv_dt = (1.0/(m+load)) * (Fp*u - 0.5*rho*Cd*A*v**2)
@@ -35,8 +35,8 @@ v0 = 0.0
 # set point
 vs = np.zeros(nsteps)
 ubias = 0.0
-Kc = 1.0/0.72 * 5.0
-tauI = 32.0
+Kc = 1.04 * 3
+tauI = 40
 sum_int = 0.0
 es = np.zeros(nsteps)
 sps = np.zeros(nsteps)

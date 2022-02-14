@@ -27,7 +27,7 @@ ts = [0] # linearly spaced time vector
 # simulate step test operation
 step = [0] # u = valve % open
 # passenger(s) + cargo load
-load = 200.0 # kg
+load = 100.0 # kg
 # velocity initial condition
 v0 = 0.0
 # set point
@@ -35,8 +35,8 @@ v0 = 0.0
 v = [0]
 vs = [0]
 ubias = 0.0
-Kc = 1.0/0.72 * 5.0
-tauI = 25.0
+Kc = 1.04
+tauI = 33.0
 sum_int = 0.0
 es = [0]
 ies = [0]

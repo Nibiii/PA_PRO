@@ -4,7 +4,7 @@ from scipy.integrate import odeint
 import time
 
 # animate plots?
-animate=True # True / False
+animate=False # True / False
 
 # define model
 def vehicle(v,t,u,load):

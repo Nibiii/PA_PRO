@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, ResponsiveContainer } from 'recharts';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
-
-//var plot_data = [{"timestamp":"1641138775","current_speed":20.0,"set_speed":20},{"timestamp":"1641138785","current_speed":20.0,"set_speed":30}];
  
 class App extends React.Component{
     constructor(props){
@@ -12,7 +10,7 @@ class App extends React.Component{
         this.state={
             set_speed: 0,
 			plot_data: [],
-			intervalId: 0
+			intervalId: 0,
         };
     }
 	
@@ -39,6 +37,8 @@ class App extends React.Component{
 	}
 	
 	componentDidMount() {
+		var end = this.state.plot_data.length-1;
+		var diff = end - this.state.brush_start;
 		const newIntervalId = setInterval(() => {
 			fetch('http://127.0.0.1:5001/get')
 				.then(response => response.json())
@@ -60,7 +60,7 @@ class App extends React.Component{
         return(
             <div className='app'>
                 <div className='chart'>
-					<ResponsiveContainer width={600} height={600}>
+					<ResponsiveContainer width={1000} height={600}>
 						<LineChart
 						  width={500}
 						  height={300}
@@ -73,24 +73,18 @@ class App extends React.Component{
 						  <Legend />
 						  <CartesianGrid strokeDasharray="3 3" horizontal={false} vertical={false}/>
 						  <XAxis dataKey="timestamp" unit="s"/>
-						  <YAxis unit="km/h"/>
-						  <Line dataKey="current_speed" stroke="blue"/>
-						  <Line dataKey="set_speed" stroke="red"/>
+						  <YAxis yAxisId="left" unit="km/h"/>
+						  <YAxis yAxisId="right" orientation="right" unit="%"/>
+						  <Line dataKey="throttle" yAxisId="right" stroke="green" name="Throttle"/>
+						  <Line dataKey="current_speed" yAxisId="left" stroke="blue" name="Current speed"/>
+						  <Line dataKey="set_speed" yAxisId="left" stroke="red" name="Desired speed"/>
 						  <Tooltip formatter={this.modifyFormatter}/>
-						<Brush dataKey="timestamp" startIndex={this.state.plot_data.length-16} endIndex={this.state.plot_data.length-1}>
-						  <LineChart>
-							<Line dataKey="current_speed" stroke="blue"/>
-							<Line dataKey="set_speed" stroke="red"/>
-						  </LineChart>
-						</Brush>
 						</LineChart>
 					</ResponsiveContainer>
                 </div>
                 <div className='controller'>
-                    <div className='slider'>
+					<div className='manual-control'>
                         <input type='range' min='1' max='300' step='1' value={this.state.set_speed} onInput={e => this.setState({set_speed: parseInt(e.target.value)})}/>
-                    </div>
-                    <div className='manual-control'>
                         <input type='button' className='btn btn-primary' value='-' onClick={() => {if(this.state.set_speed > 0){this.setState({set_speed: parseInt(this.state.set_speed) - 1})}}}></input>
                         <input type='button' className='btn btn-primary' value='+' onClick={() => {if(this.state.set_speed < 300){this.setState({set_speed: parseInt(this.state.set_speed) + 1})}}}></input>
 						<span> {this.state.set_speed} km/h</span>

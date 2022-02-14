@@ -20,7 +20,7 @@ def db_connect(host, user, password, db):
     return mydb
 
 def check_if_table_exists():
-    mycursor.execute("CREATE TABLE IF NOT EXISTS `data` (`id` INT NOT NULL AUTO_INCREMENT, `timestamp` INT(20) NOT NULL, `cur_speed` FLOAT(20) NOT NULL, `set_speed` INT(20) NOT NULL, PRIMARY KEY (`id`));")
+    mycursor.execute("CREATE TABLE IF NOT EXISTS `data` (`id` INT NOT NULL AUTO_INCREMENT, `timestamp` INT(20) NOT NULL, `cur_speed` FLOAT(20) NOT NULL, `set_speed` INT(20) NOT NULL, `throttle` FLOAT(20) NOT NULL, PRIMARY KEY (`id`));")
     mycursor.execute("CREATE TABLE IF NOT EXISTS `speed` (`id` INT NOT NULL AUTO_INCREMENT, `speed` FLOAT(20) NOT NULL, PRIMARY KEY (`id`));")
     mydb.commit()
     
@@ -28,11 +28,11 @@ def check_if_table_exists():
 @cross_origin()
 def send_data():
     new_list = []
-    mycursor.execute("SELECT timestamp, cur_speed, set_speed FROM data ORDER BY id ASC;")
+    mycursor.execute("SELECT timestamp, cur_speed, set_speed, throttle FROM data ORDER BY id ASC;")
     result = mycursor.fetchall()
     if mycursor.rowcount > 0:
         for x in result:
-            new_list.append({"timestamp": x[0], "current_speed": x[1], "set_speed": x[2]})
+            new_list.append({"timestamp": x[0], "current_speed": x[1], "set_speed": x[2], "throttle": x[3]})
     mydb.commit()
     return jsonify(new_list)
 

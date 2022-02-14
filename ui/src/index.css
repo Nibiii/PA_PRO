@@ -1,11 +1,9 @@
 #root{
-    width: 50vw;
-    height: 50vw;
-    margin:auto
-}
-.controller{
-    clear: both;
-    overflow: auto;
+    position: absolute;
+	left: 50%;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
 }
 .manual-control, .slider{
     float: left;
@@ -18,4 +16,9 @@
     height: 30px;
     text-align: center;
     margin: 0 10px;
+}
+.controller {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 }
