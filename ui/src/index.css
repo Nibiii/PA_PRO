@@ -1,0 +1,21 @@
+#root{
+    width: 50vw;
+    height: 50vw;
+    margin:auto
+}
+.controller{
+    clear: both;
+    overflow: auto;
+}
+.manual-control, .slider{
+    float: left;
+}
+.btn{
+    text-align: center;
+    margin: 4px 4px;
+}
+.slider input{
+    height: 30px;
+    text-align: center;
+    margin: 0 10px;
+}
